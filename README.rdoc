@@ -1,0 +1,7 @@
+= Eregon's Ruby Classes
+
+This is a collection of classes I used over years.
+
+Some of them are probably broken, or filled by bad ideas, but some might be interesting too :)
+
+Feel free to mail me (eregontp at gmail dot com), if you have any comment or improved it.
