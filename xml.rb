@@ -1,3 +1,1 @@
-Dir[File.dirname(__FILE__)+'/xml/*.rb'].each { |f|
-  require f
-}
+Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb'), '*.rb')].each { |f| require f }
