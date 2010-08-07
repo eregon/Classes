@@ -24,6 +24,22 @@ class Array
   end
 end
 
+class Hash
+  def to_proc
+    procs = self.each_pair.with_object({}) { |(filter, map), procs|
+      procs[filter] = map.respond_to?(:to_proc) ? map.to_proc : Proc.new { map }
+    }
+    filters = self.keys
+    Proc.new { |obj|
+      if filter = filters.find { |filter| filter === obj }
+        procs[filter][obj]
+      else
+        obj
+      end
+    }
+  end
+end
+
 if __FILE__ == $0
   require "rspec"
 
@@ -56,6 +72,13 @@ if __FILE__ == $0
 
       ary.map(&[[[:to_s, 2], :to_f]]).should ==
       ary.map { |i| [i.to_s(2), i.to_f] }
+    end
+  end
+
+  describe "Hash#to_proc" do
+    it "a Hash should act like a selective map" do
+      ary = [1, "2", :"3"]
+      ary.map(&{ 1 => [:*,3], String => :to_i, /3/ => 4 }).should == [3, 2, 4]
     end
   end
 end
