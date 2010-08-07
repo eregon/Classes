@@ -19,31 +19,31 @@ module SubTitle
         s = args[0].to_i
         ms = args[0].usec/1000
       end
-      
+
       @time = Time.at((h*60 + m)*60 + s, ms*1000).getutc
     end
-    
+
     def msec
       @time.usec/1000
     end
-    
+
     def == t
       SubTime === t and @time == t.time
     end
-    
+
     def + t
       SubTime.new(@time+t)
     end
-    
+
     def * c
       s, ms = self.to_s_ms
       SubTime.new(s * c, ms * c)
     end
-    
+
     def to_s_ms
       [@time.to_i, self.msec]
     end
-    
+
     def to_hms_ms
       if @time.to_i >= 0
         [@time.hour, @time.min, @time.sec, msec]
@@ -52,7 +52,7 @@ module SubTitle
       end
     end
   end
-  
+
   class St
     # CONVERT_TO_DURATION = -> h, m, s, ms { (h.to_i*60 + m.to_i)*60 + s.to_i + ms.to_f/1000 }
     # CONVERT_TO_UNITS = -> s {
@@ -68,7 +68,7 @@ module SubTitle
         h[ivar] = object.instance_variable_get(ivar)
       }
     }
-    
+
     attr_accessor :start, :stop, :text
     def initialize start, stop, text
       @start, @stop, @text = start, stop, text.to_s
@@ -83,7 +83,7 @@ module SubTitle
       @stop *= c
       self
     end
-    
+
     def == other
       self.class == other.class && IVARS[self] == IVARS[other]
     end
@@ -92,18 +92,18 @@ module SubTitle
   class Srt < St
     TIME_REGEX = /(\d{2}):(\d{2}):(\d{2}),(\d{3})/
     TIME_FORMAT = "%02d:%02d:%02d,%03d"
-    
+
     NUMBER_REGEXP = /\A\d+\Z/
-    
+
     HEADER_REGEXP = /\A#{TIME_REGEX} --> #{TIME_REGEX}\Z/
     HEADER_FORMAT = "#{TIME_FORMAT} --> #{TIME_FORMAT}"
-    
+
     attr_reader :i
     def initialize i, start, stop, text
       super(start, stop, text)
       @i = i
     end
-    
+
     def inspect
       str = "#{@i}\n"
       str << (HEADER_FORMAT % (@start.to_hms_ms+@stop.to_hms_ms)) << "\n"
@@ -122,7 +122,7 @@ module SubTitle
         end
       }
     end
-    
+
     def Srt.dump(sts)
       sts.join("\n")
     end
@@ -133,7 +133,7 @@ module SubTitle
   #     str = "{#{@start.to_i}}{#{@stop.to_i}}#{@text.to_s}"
   #   end
   #   alias :to_s :inspect
-  # 
+  #
   #   def Sub.load(str)
   #     fps = yield
   #     str.lines.with_object([]) { |st, sts|
@@ -158,7 +158,7 @@ module SubTitle
       @fps = fps.to_i if fps
       @sts = @type.load(@contents)
     end
-    
+
     def self.load(path, fps = nil)
       contents = IO.read(path)
       type = case File.extname(path)
@@ -169,7 +169,7 @@ module SubTitle
       end
       SubTitle.new(contents, type, fps)
     end
-    
+
     def inspect
       @type.dump(@sts)
     end
@@ -191,7 +191,7 @@ module SubTitle
     #   @type = Sub
     #   self
     # end
-    # 
+    #
     # def to_srt
     #   unless @type == Srt
     #     @sts.map! { |st|
@@ -207,12 +207,12 @@ module SubTitle
         ext = File.extname(name)
         name = @path.sub(/#{ext}$/, ".sync#{ext}")
       end
-      File.open(name, 'w') { |f|  
+      File.open(name, 'w') { |f|
         f.write(self.to_s)
       }
     end
   end
-  
+
   def self.new(*a, &b)
     SubTitle.new(*a, &b)
   end
@@ -220,9 +220,9 @@ end
 
 if __FILE__ == $0
   require "test/unit"
-  
+
   include SubTitle
-  
+
   SRT = <<SRT
 1
 00:00:01,217 --> 00:00:05,210
@@ -251,18 +251,18 @@ SRTS = [
       t = SubTime.new(rand(10000), 253)
       assert_equal t, SubTime.new(*t.to_hms_ms)
     end
-    
+
     def test_srt
       assert_equal SRTS, Srt.load(SRT)
       assert_equal SRT, Srt.dump(Srt.load(SRT))
     end
-    
+
     def test_neutral
       b = 1+rand(3)
       i = 5+rand(5)
       assert_equal SRTS, SubTitle.new(SRT, Srt).convert_by_ref( b..i , b..i ).sts
     end
-    
+
     def test_add_sec
       assert_equal SRTS, SubTitle.new(SRT, Srt).sts
       srts_double = SRTS.map { |srt|
@@ -270,7 +270,7 @@ SRTS = [
       }
       assert_equal srts_double, SubTitle.new(SRT, Srt).convert_by_ref( 0..2 , 0..1 ).sts
     end
-    
+
     def test_complete
       assert_equal SRTS, SubTitle.new(SRT, Srt).sts
       srts_double = SRTS.map { |srt|
