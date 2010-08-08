@@ -2,13 +2,27 @@ module Enumerable
   def with_other enum
     return enum_for(:with_other, enum) unless block_given?
     enum = enum.to_enum unless Enumerator === enum
-    each { |e|
+    each { |*e|
       f = begin
         enum.next
       rescue StopIteration
         nil
       end
-      yield(e, f)
+      args = e.size > 1 ? [e] << f : e << f # [[[1, 2], 3], 4] => (((a, b), c), d)
+      yield(*args)
+    }
+  end
+
+  def with_other_flat enum
+    return enum_for(:with_other_flat, enum) unless block_given?
+    enum = enum.to_enum unless Enumerator === enum
+    each { |*e|
+      f = begin
+        enum.next
+      rescue StopIteration
+        nil
+      end
+      yield(*e, f) # [1, 2, 3, 4] => (a, b, c, d)
     }
   end
 end
@@ -63,6 +77,12 @@ if __FILE__ == $0
       a, b = [1, 3, 5], [2, 4, 6]
       a.each.with_other(b).inject(0) { |sum, (e, f)| sum + e + f }.should == (1..6).reduce(:+)
       a.each.with_other(b).inspect.should == "#<Enumerator: #<Enumerator: [1, 3, 5]:each>:with_other([2, 4, 6])>"
+    end
+
+    it "should work with multiple calls" do
+      a, b, c = [1, 4, 7], [2, 5, 8], [3, 6, 9]
+      a.each.with_other(b).with_other(c).inject(0) { |sum, ((e, f), g)| sum + e + f + g }.should == (1..9).reduce(:+)
+      a.each.with_other_flat(b).with_other_flat(c).inject(0) { |sum, (e, f, g)| sum + e + f + g }.should == (1..9).reduce(:+)
     end
   end
 end
