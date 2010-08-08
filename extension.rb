@@ -35,30 +35,3 @@ module Enumerable
     result
   end
 end
-
-class IO
-  #
-  # Writes the given data to the given path and closes the file.  This is
-  # done in binary mode, complementing <tt>IO.read</tt> in standard Ruby.
-  #
-  # Returns the number of bytes written.
-  #
-  def IO.write(path, data)
-    File.new(path, "wb").write(data)
-  end
-  #
-  # Writes the given array of data to the given path and closes the file.
-  # This is done in binary mode, complementing <tt>IO.readlines</tt> in
-  # standard Ruby.
-  #
-  # Note that +readlines+ (the standard Ruby method) returns an array of lines
-  # <em>with newlines intact</em>, whereas +writelines+ uses +puts+, and so
-  # appends newlines if necessary.  In this small way, +readlines+ and
-  # +writelines+ are not exact opposites.
-  #
-  # Returns +nil+.
-  #
-  def IO.writelines(path, data)
-    File.new(path, "wb").puts(data)
-  end
-end
