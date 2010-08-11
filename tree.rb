@@ -20,9 +20,9 @@ The first handle that with not allowing a change of the parent if it is already 
 
 The second is implemented in tree/dup.rb
 
-A third implementation is tree/fast.rb, who doesn't raise anything,
-and then is very dangerous to use if you add children that already are in a Tree.
-You then have to use .dup to every child you try to add, and you are not sure it is in a Tree
+A third implementation is tree/fast.rb, which does not raise anything,
+and then is very dangerous to use if you add children which already are in the Tree.
+You then have to use .dup to every child you try to add which might be already there.
 
 Here is a benchmark on some big Trees:
 0.131 normal
