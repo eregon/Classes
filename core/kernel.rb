@@ -19,10 +19,10 @@ module Kernel
 end
 
 if __FILE__ == $0
-  require "test/unit"
+  require "rspec"
 
-  class TestKernel < Test::Unit::TestCase
-    def test_rand
+  describe "Kernel#rand" do
+    it "make easier to create random numbers" do
       # prng.rand(5..9)  # => one of [5, 6, 7, 8, 9]
       # prng.rand(5...9) # => one of [5, 6, 7, 8]
       # prng.rand(5.0..9.0) # => between 5.0 and 9.0, including 9.0
@@ -31,17 +31,12 @@ if __FILE__ == $0
       100.times {
         a, b = 5, 9
         c, d = 5.0, 9.0
-        r = 0
-        ab = (a..b)
-        awb = (a...b)
-        cd = (c..d)
-        cwd = (c...d)
-        assert ab.include?(r=rand(ab))
-        p r if r == b
-        assert awb.include?(rand(awb))
-        assert cd.include?(r=rand(cd))
-        p r if r == d
-        assert cwd.include?(rand(cwd))
+        ab, awb = (a..b), (a...b)
+        cd, cwd = (c..d), (c...d)
+        ab.should include rand(ab)
+        awb.should include rand(awb)
+        cd.should include rand(cd)
+        cwd.should include rand(cwd)
       }
     end
   end

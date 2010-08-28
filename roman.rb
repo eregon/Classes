@@ -1,6 +1,4 @@
-=begin
-from "Programming Ruby"
-=end
+# from "Programming Ruby"
 
 class Roman
   MAX_ROMAN = 4999

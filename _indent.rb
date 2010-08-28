@@ -4,12 +4,12 @@
 # _indent.rb script, ... [-d DEBUG] [-s SHOW] [-f FORCE]
 # Manage most ruby scripts
 # Restriction: can only indent/outdent of 1 level per line (this is normal code design)
-#
+# Based on rbeautify
 
 class Indent
   TAB = "  "
 
-  @@indent_exp = [
+  IndentExp = [
     /^module\b/,
     /(=\s*|^)if\b/,
     /(=\s*|^)until\b/,
@@ -30,7 +30,7 @@ class Indent
     /\{[^\}]*$/,
     /\[[^\]]*$/
   ]
-  @@outdent_exp = [
+  OutdentExp = [
     /^rescue\b/,
     /^ensure\b/,
     /^elsif\b/,
@@ -96,7 +96,7 @@ class Indent
 
           @tline.gsub!( /#.*$/ , "") # throw end-line comments
 
-          @@outdent_exp.each { |re|
+          OutdentExp.each { |re|
             if(@tline =~ re)
               p ['o', @tline, re] if $DEBUG
               tab -= 1
@@ -114,7 +114,7 @@ class Indent
           @dest += add_line(line, tab)
         end
         unless comment_line
-          @@indent_exp.each { |re|
+          IndentExp.each { |re|
             if(@tline =~ re && !(@tline =~ /\s+end\s*$/))
               p ['i', @tline, re] if $DEBUG
               tab += 1

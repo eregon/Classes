@@ -1,8 +1,3 @@
-#require 'rational'
-#require 'bigdecimal'
-#require 'bigdecimal/util' # allow .to_d for Float,Rationnal and String
-
-#$: << File.dirname(__FILE__)+'/math'
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb'), '*.rb')].each { |f| require f }
 
 module Math
@@ -15,7 +10,7 @@ end
 # Allow conversion of true, false into Fixnum
 
 module Boolean
-  def coerce(other)
+  def coerce other
     if other.kind_of? Numeric
       [other, to_i]
     else
@@ -29,21 +24,20 @@ module Boolean
 end
 class TrueClass
   include Boolean
-end
+end unless TrueClass.include? Boolean
 class FalseClass
   include Boolean
-end
+end unless FalseClass.include? Boolean
 
 if __FILE__ == $0
-  require "test/unit"
-
-  class TestMath < Test::Unit::TestCase
-    def test_boolean_coerce
-      assert_equal(3, 2 + true)
-      assert_equal(2, 2 - false)
-      assert_equal(0, 3 * false)
-      assert_equal(3, 3 / true)
-      assert_equal(1, Math::E**false)
+  require "rspec"
+  describe Math do
+    it "coerce booleans" do
+      (2 + true).should == 3
+      (2 - false).should == 2
+      (3 * false).should == 0
+      (3 / true).should == 3
+      (Math::E**false).should == 1
     end
   end
 end

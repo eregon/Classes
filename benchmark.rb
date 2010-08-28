@@ -1,7 +1,7 @@
 require 'benchmark'
 
 module Benchmark
-  def find(range, p = 1, &block)
+  def find(range, precision = 1, &block)
     min = realtime { block.call(range.begin) }
     raise "min too high: #{min}" if min > 1.0
     max = realtime { block.call(range.end) }
@@ -10,13 +10,13 @@ module Benchmark
     mid = realtime { block.call(mean) }
     puts "in #{range}:\tmin:#{min},\tmid:#{mid},\tmax:#{max}"
 
-    if (mid-1.0).abs <= p
+    if (mid-1.0).abs <= precision
       puts "#{mean} times in #{mid}"
       mean
     elsif mid < 1.0
-      find(mean..range.end, p, &block)
+      find(mean..range.end, precision, &block)
     elsif mid > 1.0
-      find(range.begin..mean, p, &block)
+      find(range.begin..mean, precision, &block)
     end
   end
 =begin

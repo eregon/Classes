@@ -20,8 +20,8 @@ module MathExp
       @deriv = deriv
       @integ = integ
     end
-    def param(p)
-      @param = p
+    def param param
+      @param = param
       self
     end
 
@@ -40,7 +40,7 @@ module MathExp
           of = "(#{@of})"
         end
       else
-        if [:x, :sq,:cb,:pow, :sqrt,:cbrt, :sin,:cos, :ln].include? @of.name
+        if [:x, :sq,:cb,:pow, :sqrt,:cbrt, :sin,:cos].include? @of.name
           of = "#{@of}"
         else
           of = "(#{@of})"

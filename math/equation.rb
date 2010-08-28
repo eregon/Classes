@@ -3,7 +3,7 @@ require_relative 'polynomial'
 class Equation
   def initialize(f, verbose = false)
     @f = f
-    @v = verbose
+    @verbose = verbose
   end
 
   def resolve
@@ -21,7 +21,7 @@ class Equation
 
   # Dichotomie
   def binary_search(lower, upper, p)
-    return binary_search_v(lower, upper, p) if @v
+    return binary_search_v(lower, upper, p) if @verbose
     raise 'No root found' if lower > upper
     middle = (lower+upper)/2.0
     case @f.run(middle).round(p) <=> 0
@@ -42,7 +42,7 @@ class Equation
     when -1 # <
       binary_search_v(middle,upper,p)
     when 0 # =
-      puts "#{@i} iterations"
+      puts "#{@i} iterations" if verbose
       middle.round(p)
     when 1 # >
       binary_search_v(lower,middle,p)
@@ -51,7 +51,7 @@ class Equation
 
   # Newton
   def newton(x0, p, max = 10000)
-    return newton_v(x0, p, max) if @v
+    return newton_v(x0, p, max) if @verbose
     # Numeric x0 : first x given
     # Integer p : precision
     # Integer max : max iterations
@@ -197,13 +197,8 @@ class Polynomial
     Equation.new(self).resolve
   end
   def factorize
-    case @degree
-    when 2
-      Equation2d.new(self).factorize
-    when 3
-      Equation3d.new(self).factorize
-    when 4
-      Equation4d.new(self).factorize
+    if (2..4).include? @degree
+      const_get("Equation#{@degree}d").new(self).factorize
     else
       [ Polynomial.new(@coef) ]
     end

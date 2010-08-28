@@ -106,7 +106,7 @@ class Point
   def inspect
     "(#{self})"
   end
-  
+
   O = Point.new( 0, 0)#.freeze
   N = Point.new( 0,-1)#.freeze
   E = Point.new( 1, 0)#.freeze
