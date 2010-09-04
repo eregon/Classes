@@ -16,7 +16,7 @@ or
 The second is maybe more handy,
  but a bit slower because it needs to dup every child added.
  It can also be a little weird because you create every time a second object
-The first handle that with not allowing a change of the parent if it is already setted
+The first handle that with not allowing a change of the parent if it is already set
 
 The second is implemented in tree/dup.rb
 
@@ -69,7 +69,7 @@ module TreeNode
   protected
   def parent= p
     unless @_node_parent.nil? or @_node_parent.equal?(p) or p.nil?
-      raise ArgumentError, "Not allowed to set parent if already setted"
+      raise ArgumentError, "Not allowed to set parent if already set"
     end
     @_node_parent = p
   end
@@ -320,11 +320,11 @@ if __FILE__ == $0
 
     def test_no_same_objects
       e = assert_raise(ArgumentError) { @c2 << @c1 }
-      assert_equal "Not allowed to set parent if already setted", e.message
+      assert_equal "Not allowed to set parent if already set", e.message
       assert_equal 1, @t.all.select { |n| n == @c1 }.length
 
       e = assert_raise(ArgumentError) { @c1 << @c21 }
-      assert_equal "Not allowed to set parent if already setted", e.message
+      assert_equal "Not allowed to set parent if already set", e.message
       assert_equal 1, @t.all.select { |n| n == @c21 }.length
 
       new_root = "new_root"
