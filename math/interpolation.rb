@@ -23,9 +23,8 @@ module Interpolation
 end
 
 if __FILE__ == $0
-  require 'test/unit'
-
-  class PolynomialTest < Test::Unit::TestCase
+  require 'minitest/autorun'
+  class PolynomialTest < MiniTest::Unit::TestCase
     def test_interpolation_lagrange_wikipedia
       points = [Point.new(-9, 5), Point.new(-4, 2), Point.new(-1, -2), Point.new(7, 9)]
       # 0.021117424242424243x^3 + 0.20397727272727273x^2 - 0.7569128787878785x - 2.9397727272727274

@@ -98,9 +98,8 @@ if __FILE__ == $0
   p v
   puts v
 
-  require "test/unit"
-
-  class TestEVector < Test::Unit::TestCase
+  require "minitest/autorun"
+  class TestEVector < MiniTest::Unit::TestCase
     def setup
       @v = EVector[-1,2,3]
       @w = EVector[2,3,4]
@@ -121,9 +120,9 @@ if __FILE__ == $0
     def test_coerce
       r = rand(5)-2
       assert_equal @v*r, r*@v
-      assert_raise(NoMethodError) { 7+@v }
-      assert_raise(NoMethodError) { 7-@v }
-      assert_raise(NoMethodError) { 7/@v }
+      assert_raises(NoMethodError) { 7+@v }
+      assert_raises(NoMethodError) { 7-@v }
+      assert_raises(NoMethodError) { 7/@v }
     end
   end
 end

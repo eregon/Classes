@@ -39,9 +39,8 @@ module TreeNode
 end
 
 if __FILE__ == $0
-  require "test/unit"
-
-  class TestTree < Test::Unit::TestCase
+  require "minitest/autorun"
+  class TestTree < MiniTest::Unit::TestCase
     def c(actual, expected)
       assert_equal(expected, actual)
     end
@@ -101,7 +100,7 @@ if __FILE__ == $0
       # @c1 << new_root
       # assert new_root.root?
 
-      e = assert_raise(NoMethodError) { @c21.parent = @root }
+      e = assert_raises(NoMethodError) { @c21.parent = @root }
       c e.message, "protected method `parent=' called for #<Node:\"c21\">"
       c @c21.parent, @c2
     end

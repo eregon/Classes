@@ -192,11 +192,9 @@ if __FILE__ == $0
   Node.new(:c1112)
   puts t.show
 
-  require "test/unit"
-
+  require "minitest/autorun"
   include Tree
-
-  class TestTree < Test::Unit::TestCase
+  class TestTree < MiniTest::Unit::TestCase
     def setup
       @c1, @c11, @c111, @c1111, @c1112, @c12, @c2, @c21 =
       [:c1, :c11, :c111, :c1111, :c1112, :c12, :c2, :c21].map { |s| Node.new(s) }

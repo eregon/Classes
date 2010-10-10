@@ -274,7 +274,7 @@ end
 
 if __FILE__ == $0
   require "minitest/autorun"
-  class TestTree < MiniTest::Unit::TestCase # Test::Unit::TestCase
+  class TestTree < MiniTest::Unit::TestCase
     def setup
       @c1, @c11, @c111, @c1111, @c1112, @c12, @c2, @c21 =
       %w[c1 c11 c111 c1111 c1112 c12 c2 c21]

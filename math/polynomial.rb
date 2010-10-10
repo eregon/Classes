@@ -184,9 +184,8 @@ class Polynomial
 end
 
 if __FILE__ == $0
-  require 'test/unit'
-
-  class PolynomialTest < Test::Unit::TestCase
+  require 'minitest/autorun'
+  class PolynomialTest < MiniTest::Unit::TestCase
     def setup
       @p1 = Polynomial.new(-3,-4,1,0,6)
       @p2 = Polynomial.new(1,0,2)

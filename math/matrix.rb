@@ -447,11 +447,9 @@ class EMatrix
 end
 
 if __FILE__ == $0
-  require "test/unit"
-
+  require "minitest/autorun"
   $VERBOSE = true
-
-  class TestMatrix < Test::Unit::TestCase
+  class TestMatrix < MiniTest::Unit::TestCase
     def setup
       @a = EMatrix[
         [1, 2],
@@ -575,9 +573,9 @@ if __FILE__ == $0
 
     def test_coerce
       assert_equal @m*7, 7*@m
-      assert_raise(NoMethodError) { 7+@m }
-      assert_raise(NoMethodError) { 7-@m }
-      assert_raise(NoMethodError) { 7/@m }
+      assert_raises(NoMethodError) { 7 + @m }
+      assert_raises(NoMethodError) { 7 - @m }
+      assert_raises(NoMethodError) { 7 / @m }
     end
 
     instance_methods(false).grep(/^test_/).each { |m|

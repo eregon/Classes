@@ -219,8 +219,7 @@ module SubTitle
 end
 
 if __FILE__ == $0
-  require "test/unit"
-
+  require "minitest/autorun"
   include SubTitle
 
   SRT = <<SRT
@@ -246,7 +245,7 @@ SRTS = [
   Srt.new(3, SubTime.new(8, 91), SubTime.new(11, 322), "If it's observed after it left the plane,\nbefore it hits its target...")
 ]
 
-  class TestSubtitle < Test::Unit::TestCase
+  class TestSubtitle < MiniTest::Unit::TestCase
     def test_time
       t = SubTime.new(rand(10000), 253)
       assert_equal t, SubTime.new(*t.to_hms_ms)

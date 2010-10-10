@@ -83,14 +83,13 @@ end
 String.send(:include, Google::Translate::StringMixin)
 
 if __FILE__ == $0
-  require "test/unit"
-
-  class TestGtranslate < Test::Unit::TestCase
+  require "minitest/autorun"
+  class TestGtranslate < MiniTest::Unit::TestCase
     def test_simple
       assert_equal("un chien", "a dog".to_fr)
       assert_equal("un chien", "a dog".en_to_fr)
       assert_equal("l'or", "the gold".to_fr)
-      assert_equal("tree", "l'arbre".to_en)
+      assert_equal("Tree", "l'arbre".to_en)
     end
   end
 end

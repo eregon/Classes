@@ -14,9 +14,9 @@ class Fixnum
 end
 
 if __FILE__ == $0
-  require "test/unit"
+  require "minitest/autorun"
   require "benchmark"
-  class TestFixnum < Test::Unit::TestCase
+  class TestFixnum < MiniTest::Unit::TestCase
     def test_mul
       assert Benchmark.realtime { 2 * 0 * lambda { sleep 2; 1 } } < 0.1
       assert_equal 0, 2 * 0 * lambda { sleep 2; 1 }
