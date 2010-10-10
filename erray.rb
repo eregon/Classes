@@ -4,23 +4,21 @@
 class Erray
   include Enumerable
   def initialize(*args)
-    @data = ((args.length == 1) && (args[0].is_a? Array)) ? args[0] : args
+    @data = (args.size == 1 and Array === args[0]) ? args[0] : args
     @data ||= []
     case depth
     when 1
       @data.delete_if { |e| e.to_s == '' }
     when 2
-      @data.delete_if { |line| line.join('') == '' }
+      @data.delete_if { |line| line.join == '' }
     end
   end
 
-  def depth(arr = @data)
-    return 0 if arr.compact.length == 0
-    depths = [1]
-    arr.each { |sub|
-      depths << 1+depth(sub) if sub.is_a? Array
-    }
-    depths.max
+  def depth(ary = @data)
+    return 0 if ary.compact.length == 0
+    ary.each_with_object([1]) { |row, depths|
+      depths << 1 + depth(row) if Array === row
+    }.max
   end
 
   def [](i)
@@ -42,26 +40,19 @@ class Erray
     when 0
       ''
     when 1
-      out = "<ul>\n"
-      @data.compact.each { |e|
-        out += "\t<li>#{e}</li>\n" unless e.to_s == ''
-      }
-      out + "</ul>\n"
+      @data.compact.each_with_object("<ul>\n") { |e, s|
+        s << "\t<li>#{e}</li>\n" unless e.to_s == ''
+      } << "</ul>\n"
     when 2
-      str = "<table>\n"
       max_rows = @data.max { |a, b| a.length <=> b.length }.length
-      @data.each { |line|
-        str += "\t<tr>"
-        row = 0
-        line.compact.each { |field|
-          str += (field == '') ? "\t<td />" : "\t<td>#{field}</td>"
-          row += 1
+      @data.inject("<table>\n") { |str, line|
+        str << "\t<tr>"
+        line.compact.each_with_index { |field, row|
+          str << (field == '') ? "\t<td />" : "\t<td>#{field}</td>"
         }
-        (max_rows-row).times { str += "\t<td />" }
-        str += "\t</tr>\n"
-      }
-      str += "</table>\n"
-      str
+        (max_rows-line.compact.size).times { str += "\t<td />" }
+        str << "\t</tr>\n"
+      } << "</table>\n"
     end
   end
   def to_xml
@@ -69,22 +60,18 @@ class Erray
     when 0
       ''
     when 1
-      ul = XML::Node.new('ul')
-      @data.compact.each { |e|
+      @data.compact.each_with_object(XML::Node.new('ul')) { |e, ul|
         ul << XML::Node.new('li').text(e) unless e.to_s == ''
       }
-      ul
     when 2
       table = XML::Node.new('table')
-      max_rows = @data.max { |a, b| a.length <=> b.length }.length
+      max_rows = @data.max_by(&:size).size
       @data.each { |line|
         tr = table << XML::Node('tr')
-        row = 0
-        line.compact.each { |field|
+        line.compact.each_with_index { |field, row|
           tr << XML::Node('td').set_text(field)
-          row += 1
         }
-        (max_rows-row).times { tr << XML::Node('td') }
+        (max_rows-line.compact.size).times { tr << XML::Node('td') }
       }
       table
     end
@@ -95,31 +82,20 @@ class Erray
   alias :to_s :inspect
 
   #2D functions
-  def row(n)
-    @data.map { |e| e[n.to_i] }
-  end
-  alias :| :row
-  def rows
-    throw 'Only for 2D Array' unless depth == 2
-    throw 'Missing fields' unless @data.map { |line| line.to_a.length }.uniq.length == 1
-    Array.new(@data[0].length) { |i| @data.map { |e| e[i] } }
-  end
   def to_table
-    throw 'Only for 2D Array' unless depth == 2
-    throw 'Missing fields' unless @data.map { |line| line.to_a.length }.uniq.length == 1
-    lengths = (0...@data[0].length).map { |i|
-      row(i).map { |e| e.to_s.length }
-    }
-    @data.map { |line|
-      (0...@data[0].length).map { |i|
-        line[i].to_s+ " "*(lengths[i].max - line[i].to_s.length)
-      }.join(" ")
-    }.join("\n")
+    raise 'Only for 2D Array' unless depth == 2
+    throw 'Missing fields' unless @data.map(&:size).uniq.size == 1
+    max_lengths = @data.transpose.map { |col| col.map { |e| e.to_s.length }.max }
+    @data.map { |row|
+      row.map.with_index { |e, i|
+        e.to_s.ljust(max_lengths[i])
+      } * "\t"
+    } * "\n"
   end
 end
 
 class Array
-  def to_erray
+  def to_table
     Erray.new(self).to_table
   end
 end
