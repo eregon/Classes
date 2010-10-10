@@ -273,8 +273,8 @@ module TreeNode
 end
 
 if __FILE__ == $0
-  require "test/unit"
-  class TestTree < Test::Unit::TestCase
+  require "minitest/autorun"
+  class TestTree < MiniTest::Unit::TestCase # Test::Unit::TestCase
     def setup
       @c1, @c11, @c111, @c1111, @c1112, @c12, @c2, @c21 =
       %w[c1 c11 c111 c1111 c1112 c12 c2 c21]
@@ -319,11 +319,11 @@ if __FILE__ == $0
     end
 
     def test_no_same_objects
-      e = assert_raise(ArgumentError) { @c2 << @c1 }
+      e = assert_raises(ArgumentError) { @c2 << @c1 }
       assert_equal "Not allowed to set parent if already set", e.message
       assert_equal 1, @t.all.select { |n| n == @c1 }.length
 
-      e = assert_raise(ArgumentError) { @c1 << @c21 }
+      e = assert_raises(ArgumentError) { @c1 << @c21 }
       assert_equal "Not allowed to set parent if already set", e.message
       assert_equal 1, @t.all.select { |n| n == @c21 }.length
 
@@ -332,11 +332,11 @@ if __FILE__ == $0
       assert !@root.root?
       assert new_root.root?
 
-      e = assert_raise(ArgumentError) { @c1 << new_root }
+      e = assert_raises(ArgumentError) { @c1 << new_root }
       assert_equal "Cannot duplicate the root", e.message
       assert new_root.root?
 
-      e = assert_raise(NoMethodError) { @c21.parent = @root }
+      e = assert_raises(NoMethodError) { @c21.parent = @root }
       assert_equal "protected method `parent=' called for #<Node:\"c21\">", e.message
       assert_equal @c2, @c21.parent
     end
