@@ -1,4 +1,31 @@
 =begin
+Waow: this is beautiful
+
+def printTree(tree,indent)
+ if (Array === tree)
+    tree.map { |child| printTree(child,indent+"|  ") }
+ else
+    puts(indent.gsub(/\s+$/,"--")+tree.to_s)
+ end
+end
+printTree([1,2,[11,22,[111,222,333,444],33],3,4],"")
+
+
+this give :
+ |--1
+ |--2
+ |  |--11
+ |  |--22
+ |  |  |--111
+ |  |  |--222
+ |  |  |--333
+ |  |  |--444
+ |  |--33
+ |--3
+ |--4
+=end
+
+=begin
 Tree module, represent a generic Tree structure in Ruby
 
 There are 2 ways to work:

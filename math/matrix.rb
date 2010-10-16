@@ -34,27 +34,25 @@ class EMatrix
   # (1,2,3,4)
   # => [ 1 2 ]
   #    [ 3 4 ]
-  def initialize(*arr)
-    if block_given? and (arr.length == 2) || (arr.length == 1 && arr *= 2) # new(m, n) { |i,j| }
-      @m, @n = arr
-      @a = Array.new(@m) { |i|
-        Array.new(@n) { |j|
+  def initialize(*args)
+    if block_given? and (args.length == 2) || (args.length == 1 && args *= 2) # new(m, n) { |i,j| }
+      @a = Array.new(args.first) { |i|
+        Array.new(args.last) { |j|
           yield(i, j)
         }
       }
-    elsif Array === arr[0] && arr.length == 1 && Array === arr[0][0] # new([[a_ij],[],..])
-      @a = arr[0].to_a
-      @m, @n = @a.length, @a[0].length
-    elsif arr == arr.flatten and !arr.empty? # new(a, ...) regular matrix case
-      sqrt_len = Math.sqrt(arr.length)
+    elsif Array === args[0] && args.length == 1 && Array === args[0][0] # new([[a_ij],[],..])
+      @a = args[0].to_a
+    elsif args == args.flatten and !args.empty? # new(a, ...) regular matrix case
+      sqrt_len = Math.sqrt(args.length)
       raise ArgumentError, 'Cannot create not regular matrix with this expression' unless sqrt_len.to_i == sqrt_len
       @a = Array.new(sqrt_len) { |i|
-        arr[i*sqrt_len, sqrt_len]
+        args[i*sqrt_len, sqrt_len]
       }
-      @m, @n = @a.length, @a[0].length
     else
       raise ArgumentError, '[[]+] or (m, n=m) { |i,j| Numeric } or Numeric+ for regular'
     end
+    @m, @n = @a.length, @a[0].length
   end
 
   class << self
@@ -73,7 +71,7 @@ class EMatrix
     end
     alias :I :identity
 
-    def random(n, range = (-5..5))
+    def random(n, range = -5..5)
       new(n) { rand(range) }
     end
   end
@@ -128,6 +126,9 @@ class EMatrix
   def [](i, j)
     @a[i-1][j-1]
   end
+  def []=(i, j, v)
+    @a[i-1][j-1] = v
+  end
 
   def each
     @a.each { |row| yield row }
@@ -160,9 +161,9 @@ class EMatrix
       }
     end
   end
-  def / o
-    raise "#{self.class} can only be divided by a numeric value" unless o.is_a? Numeric
-    new { |i,j| Rational(@a[i][j], o).simplify }
+  def / n
+    raise "#{self.class} can only be divided by a numeric value" unless n.is_a? Numeric
+    new { |i,j| Rational(@a[i][j], n) }
   end
 
   # fast, exponentiation by squaring
@@ -191,9 +192,7 @@ class EMatrix
   end
 
   def trace
-    @a.each_with_index.inject(0) { |t, (row, i)|
-      t + row[i]
-    }
+    diagonal.inject(:+)
   end
 
   def minor(r, c)
@@ -430,7 +429,12 @@ class EMatrix
     end
   end
 
+  def simplify
+    @a.map! { |row| row.map! { |e| e.respond_to?(:simplify) ? e.simplify : e } }
+  end
+
   def inspect
+    simplify
     max_len = @a.flatten.map { |e|
       raise "You have a EVector in a #{self.class} cell !" if EVector === e
       e.to_s.length
