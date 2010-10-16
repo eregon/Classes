@@ -84,7 +84,7 @@ class Erray
   #2D functions
   def to_table
     raise 'Only for 2D Array' unless depth == 2
-    throw 'Missing fields' unless @data.map(&:size).uniq.size == 1
+    raise 'Missing fields' unless @data.map(&:size).uniq.size == 1
     max_lengths = @data.transpose.map { |col| col.map { |e| e.to_s.length }.max }
     @data.map { |row|
       row.map.with_index { |e, i|

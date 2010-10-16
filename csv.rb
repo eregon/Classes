@@ -38,7 +38,7 @@ class CSV
         if (data =~ Regexp.new(quote)).nil?
           result[l] = data.split(delim)
         else
-          throw "CSV Regex doesn't work"
+          raise "CSV Regex doesn't work"
           #result[l] = data.match(Regexp.new('(?<=^|'+delimiter+')'+space+quote+'?((?(?<='+quote+')(?:(?:'+quote+quote+'|[^'+quote+'])*(?='+quote+delimiter+'|'+quote+'$))|(?:[^'+delimiter+quote+']*(?='+delimiter+'|$))))', Regexp::EXTENDED+Regexp::MULTILINE))
         end
         n_fields_max = [ result[-1..1].length, n_fields_max].max
