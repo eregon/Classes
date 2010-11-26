@@ -53,11 +53,8 @@ class Polynomial
     @coef[i] = v
   end
   def each # each { |coef, degree| }
-    if block_given?
-      degree.downto(0) { |degree| yield(@coef[degree], degree) }
-    else
-      to_enum(:each)
-    end
+    return to_enum unless block_given?
+    degree.downto(0) { |degree| yield(@coef[degree], degree) }
   end
 
   def inspect
