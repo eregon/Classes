@@ -112,7 +112,7 @@ class Equation2d
     elsif r == 0
       [ -@p[1]/2/@p[2] ]
     elsif r > 0
-      [ (-@p[1]-Math.sqrt(r))/2/@p[2], (-@p[1]+Math.sqrt(r))/2/@p[2] ]
+      [ (-@p[1] - Math.sqrt(r)) / (2*@p[2]), (-@p[1] + Math.sqrt(r)) / (2*@p[2]) ]
     end
   end
   def factorize
@@ -120,7 +120,7 @@ class Equation2d
     if n == 2
       [ Polynomial.new(@p[2], -roots[0]*@p[2]), Polynomial.new(1, -roots[1]) ]
     elsif n == 1
-      [ Polynomial.new(@p[2]**0.5, -roots[0]*@p[2]**0.5), Polynomial.new(@p[2]**0.5, -roots[0]*@p[2]**0.5) ]
+      [ Polynomial.new(@p[2]**0.5, -roots[0]*@p[2]**0.5) ] * 2
     else
       @p
     end
@@ -154,16 +154,14 @@ class Equation3d
     d = 4*p**3+27*q**2 # discriminant
     if d > 0
       sqrt = Math.sqrt( (q/2)**2 + (p/3)**3 )
-      u = ( -q/2 + sqrt )**(1.0/3)
-      v = ( -q/2 - sqrt )**(1.0/3)
+      u, v = Math.cbrt(-q/2 + sqrt), Math.cbrt(-q/2 - sqrt)
       [u+v - a/3]
     elsif d == 0
       [3*q/p, -3*q/p, -3*q/p].sort
     elsif d < 0
       # GNU Scientific Library
       # not found how to do with Cardan
-      polynom = @p / @p[3]
-      a, b, c = polynom[2].to_f, polynom[1].to_f, polynom[0].to_f
+      a, b, c = [a,b,c].map { |v| v/@p[3] }
       q = ( a**2 - 3*b ) / 9
       r = ( 2*a**3 - 9*a*b + 27*c ) / 54
       [

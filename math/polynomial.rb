@@ -80,27 +80,18 @@ class Polynomial
     Polynomial.new(degree) { |d| -@coef[d] }
   end
 
-  def +(o)
-    case o
-    when Polynomial
-      min, max = [self, o].sort_by(&:degree)
-      Polynomial.new(max.degree) { |d|
-        (min[d] || 0) + max[d]
-      }
-    when Numeric
-      Polynomial.new(@coef.dup.tap { |coef| coef[0] += o })
-    end
-  end
-  def -(o)
-    case o
-    when Polynomial
-      min, max = [self, o].sort_by(&:degree)
-      Polynomial.new(max.degree) { |d|
-        (min[d] || 0) - max[d]
-      }
-    when Numeric
-      Polynomial.new(@coef.dup.tap { |coef| coef[0] -= o })
-    end
+  [:+, :-].each do |op|
+    eval "def #{op} o
+      case o
+      when Polynomial
+        min, max = [self, o].sort_by(&:degree)
+        Polynomial.new(max.degree) { |d|
+          (min[d] || 0) #{op} max[d]
+        }
+      when Numeric
+        Polynomial.new(@coef.dup.tap { |coef| coef[0] #{op}= o })
+      end
+    end"
   end
   def *(o)
     case o
