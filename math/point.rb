@@ -32,22 +32,18 @@ class Point
   def -@
     self.class.new(-@x, -@y)
   end
-  def +(o)
-    case o
-    when Point
-      self.class.new(@x+o.x, @y+o.y)
-    when Numeric
-      self.class.new(@x+o, @y+o)
-    end
+
+  { :+ => '++', :- => '--', :>> => '+-', :<< => '-+' }.each_pair do |op, expr|
+    class_eval "def #{op}(o)
+      case o
+      when Point
+        self.class.new(@x #{expr[0]} o.x, @y #{expr[1]} o.y)
+      when Numeric
+        self.class.new(@x #{expr[0]} o, @y #{expr[1]} o)
+      end
+    end"
   end
-  def -(o)
-    case o
-    when Point
-      self.class.new(@x-o.x, @y-o.y)
-    when Numeric
-      self.class.new(@x-o, @y-o)
-    end
-  end
+
   def *(n)
     self.class.new(@x*n, @y*n)
   end
@@ -57,23 +53,6 @@ class Point
 
   def coerce(other)
     [Scalar.new(other), self]
-  end
-
-  def >>(o) # + -
-    case o
-    when Point
-      self.class.new(@x+o.x, @y-o.y)
-    when Numeric
-      self.class.new(@x+o, @y-o)
-    end
-  end
-  def <<(o) # - +
-    case o
-    when Point
-      self.class.new(@x-o.x, @y+o.y)
-    when Numeric
-      self.class.new(@x-o, @y+o)
-    end
   end
 
   def add_x(v)
@@ -99,8 +78,7 @@ class Point
   alias :length :distance
 
   def to_s
-    @x = @x.to_i if !(Integer === @x) and @x == @x.to_i
-    @y = @y.to_i if !(Integer === @y) and @y == @y.to_i
+    @x, @y = [@x, @y].map { |v| !(Integer === v) && v == v.to_i ? v.to_i : v }
     "#{@x},#{@y}"
   end
   def inspect
@@ -113,4 +91,16 @@ class Point
   S = Point.new( 0, 1)#.freeze
   W = Point.new(-1, 0)#.freeze
   DIRECTIONS = [N, E, S, W]#.freeze
+end
+
+require 'rspec'
+describe Point do
+  it '+' do
+    (Point.new(2,3) + Point.new(3,4)).should == Point.new(5,7)
+    (Point.new(2,3) + 4).should == Point.new(6,7)
+  end
+  it '>>' do
+    (Point.new(2,3) >> Point.new(1,1)).should == Point.new(3,2)
+    (Point.new(2,3) >> 1).should == Point.new(3,2)
+  end
 end
