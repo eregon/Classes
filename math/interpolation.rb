@@ -67,5 +67,13 @@ if __FILE__ == $0
       poly = Interpolation.Lagrange(points)
       assert_equal points.map { |p| p.y }, points.map { |p| poly & p.x }
     end
+
+    def test_interpolation_square_sum
+      n = 15
+      points = (1..n).map { |x| Point.new(x, x.downto(1).inject(0) { |sum, i| sum + i*i }) }
+      poly = Interpolation.Lagrange(points) # 1/3x^3 + 1/2x^2 + 1/6x
+      assert_equal Polynomial.new(Rational(1,3), Rational(1,2), Rational(1,6), 0), poly
+      assert_equal points.map(&:y), points.map { |p| poly & p.x }
+    end
   end
 end
